@@ -8,10 +8,19 @@ const App = () => {
   const leituraArquivoJSON = async () => {
     try {
       const arquivoJSON = JSON.parse(jsonTexto);
-      const valorBrl = arquivoJSON.usd.brl
-      setBrl(valorBrl);
+
+      if (arquivoJSON && arquivoJSON.usd) {
+        const valorBrl = arquivoJSON.usd.brl;
+        if (valorBrl !== undefined) {
+          setBrl(valorBrl.toFixed(8)); 
+        } else {
+          Alert.alert('Campo "brl" não encontrado no JSON.');
+        }
+      } else {
+        Alert.alert('Campo "usd" não encontrado no JSON.');
+      }
     } catch (erro) {
-      Alert.alert('Erro no JSON inserido.');
+      Alert.alert('Erro ao analisar o JSON inserido.');
     }
   };
 
@@ -21,7 +30,9 @@ const App = () => {
       <TextInput
         style={styles.input}
         multiline={true}
-        onChangeText={(text) => setJsonTexto(text)}/>
+        onChangeText={(text) => setJsonTexto(text)}
+        value={jsonTexto}
+      />
       <Button title="USD --> BRL" onPress={leituraArquivoJSON} />
       {brl && (
         <Text style={styles.result}>
@@ -32,16 +43,15 @@ const App = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     padding: 20,
   },
 
   header: {
+    textAlign: 'left',
     fontSize: 24,
     marginBottom: 10,
   },
